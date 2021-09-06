@@ -12,32 +12,42 @@ public class Input {
     private static BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
     private static SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy");
 
-    public static String getString(String prompt) throws IOException {
-        if (prompt != "")
-            Output.print(prompt);
+    public static String getString(String prompt) {
+        String input;
+        Output.print(prompt);
+        while (true) {
+            try {
+                input = reader.readLine();
+                return input;
+            } catch (IOException e) {
+                Output.println("Unable to capture input. Please try again. ");
+                continue;
+            }
+        }
 
-        String input = reader.readLine();
-        return input;
     }
 
-    public static String getString() throws IOException {
+    public static String getString() {
         return getString("");
     }
 
-    public static int getInt(String prompt) throws IOException {
+    public static int getInt(String prompt) {
         String input;
         int i = 0;
-        boolean valid = false;
 
-        while (!valid) {
-            if (prompt != "")
-                Output.print(prompt);
+        while (true) {
+            Output.print(prompt);
 
-            input = reader.readLine();
+            try {
+                input = reader.readLine();
+            } catch (IOException e) {
+                Output.println("Unable to capture input. Please try again. ");
+                continue;
+            }
 
             try {
                 i = Integer.parseInt(input);
-                valid = true;
+                break;
             } catch (Exception e) {
                 Output.println("Input must be an integer.");
             }
@@ -46,24 +56,21 @@ public class Input {
         return i;
     }
 
-    public static int getInt() throws IOException {
+    public static int getInt() {
         return getInt("");
     }
 
     public static char getChar(String prompt) throws IOException {
         String input;
-        boolean valid = false;
         char i = '0';
 
-        while (!valid) {
-            if (prompt != "")
-                Output.print(prompt);
-
+        while (true) {
+            Output.print(prompt);
             input = reader.readLine();
 
             if (input.length() == 1) {
-                valid = true;
                 i = input.toCharArray()[0];
+                break;
             } else {
                 Output.println("Input must be one character. ");
             }
@@ -76,18 +83,22 @@ public class Input {
         return getChar("");
     }
 
-    public static Date getDate(String prompt) throws IOException {
+    public static Date getDate(String prompt) {
         String input;
-        boolean valid = false;
         Date d = new Date();
 
-        while (!valid) {
-            if (prompt != "")
-                Output.print(prompt);
-            input = reader.readLine();
+        while (true) {
+            Output.print(prompt);
+            try {
+                input = reader.readLine();   
+            } catch (IOException e) {
+                Output.println("Unable to capture input. Please try again. ");
+                continue;
+            }
+
             try {
                 d = df.parse(input);
-                valid = true;
+                break;
             } catch (ParseException e) {
                 Output.println("Input must be a valid date in format: " + df.toPattern() + " .");
             }
@@ -95,7 +106,7 @@ public class Input {
 
         return d;
     }
-    
+
     public static Date getDate() throws IOException {
         return getDate("");
     }
