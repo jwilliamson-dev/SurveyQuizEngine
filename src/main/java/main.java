@@ -1,12 +1,9 @@
 package main.java;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 class SurveyQuizEngine {
@@ -28,7 +25,7 @@ class SurveyQuizEngine {
                     handleSurvey();
                     break;
                 case 2:
-                    // loadedSurvey = new Test();
+                    loadedSurvey = new Test();
                     handleTest();
                     break;
                 case 3:
@@ -36,7 +33,7 @@ class SurveyQuizEngine {
                     handleSurvey();
                     break;
                 case 4:
-                    // loadedSurvey = loadTest();
+                    loadedSurvey = loadSurvey(); // change later
                     handleTest();
                     break;
                 case 5:
@@ -46,7 +43,7 @@ class SurveyQuizEngine {
                     Output.println("Unrecognized Command.");
             }
         }
-        
+
     }
 
     public static void handleSurvey() {
@@ -217,11 +214,43 @@ class SurveyQuizEngine {
     }
 
     public static void gradeTest() {
-        return;
+        Test ls = (Test) loadedSurvey;
+        HashMap<String, Integer> gradeReport = ls.getGradeReport();
+        float grade = (float)gradeReport.get("Correct").intValue() / (gradeReport.get("Incorrect").intValue() + gradeReport.get("Correct").intValue()) * 100;
+
+        Output.println("Your preliminary grade is: " + grade);
     }
 
     public static void editTest() {
-        return;
+        int command;
+
+        while (true) {
+            Output.println("-------- Edit Test --------");
+            Output.println("1. Add Question\n2. Edit Question\n3. Remove Question\n4. Set Answer Key\n5. Exit");
+
+            command = Input.getInt("Enter a number: ");
+
+            switch (command) {
+                case 1:
+                    createQuestion();
+                    break;
+                case 2:
+                    Output.println("Not Implemented");
+                    break;
+                case 3:
+                    removeQuestion();
+                    break;
+                case 4:
+                    setAnswerKey();
+                    break;
+                case 5:
+                    Output.println("Exiting.");
+                    return;
+                default:
+                    Output.println("Unrecognized Command.");
+                    break;
+            }
+        }
     }
 
     public static void removeQuestion() {
@@ -293,5 +322,32 @@ class SurveyQuizEngine {
                 Output.println("ANSWER:\t" + ans);
             }
         }
+    }
+
+    public static void setAnswerKey() {
+        Test ls = (Test) loadedSurvey;
+        String ans;
+        List<String> key = new ArrayList<String>();
+
+        for (Question q : loadedSurvey.getQuestions()) {
+            Output.println("-------- Set Answer Key --------");
+            Output.println(q.getQuestionPrompt());
+            Output.println(q.getAnswerPrompt());
+
+            if (q instanceof ShortAnswerQuestion || q instanceof EssayQuestion) {
+                key.add("");
+                Output.println("Needs manual grading."); 
+                continue;
+            }
+
+            do {
+                ans = Input.getString("Enter your answer: ");
+            } while (!q.validateAnswer(ans));
+
+            key.add(ans);
+        }
+
+        ls.setAnswerKey(key);
+
     }
 }
